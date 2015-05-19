@@ -96,6 +96,7 @@ define maw::instance (
   $db_host          = 'localhost',
 ) {
   validate_string($domain, $db_name, $db_user, $db_host)
+  validate_bool($ssl, $db_manage, $db_user_manage)
   validate_re($db_password, ['', '^.{8,}$'])
   validate_re($wp_version, ['latest', '\d+\.\d+(\.\d+)?'])
 
