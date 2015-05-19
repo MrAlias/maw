@@ -4,7 +4,7 @@
 #
 # This means that a MySQL database is created or checked, an Apache
 # vhost is created or updated, and the correct version of WordPress
-# is setup at the correct doument root.
+# is setup at the correct document root.
 #
 # It is assumed that the MySQL server and Apache web server are
 # configured elsewhere.
@@ -16,12 +16,64 @@
 #
 #   Defaults to the **namevar**.
 #
+# [*ssl*]
+#   Specifies if the Apache Vhost should use SSL.
+#
+#   Defaults to `false`.
+#
+# [*ssl_cert*]
+#   The absolute file path of SSL certificate to use if `ssl` is true.
+#
+# [*ssl_cert_content*]
+#   If specified, this defines the contents of the SSL certificate.
+#
+# [*ssl_key*]
+#   The absolute file path of SSL key to use if `ssl` is true.
+#
+# [*ssl_key_content*]
+#   If specified, this defines the contents of the SSL key.
+#
 # [*docroot*]
 #   Absolute file path to the sites document root.
 #
 #   Defaults to `'/var/www/${domain}'`.
 #
 # [*wp_version*]
+#   Version of WordPress to install at the `docroot`.
+#
+#   Valid values are the sematic version of WordPress or `'latest'` to install
+#   the latest version released.
+#
+#   Defaults to `'latest'`.
+#
+# [*db_manage*]
+#   Specifies if the MySQL database is to managed.
+#
+#   Defaults to `true`.
+#
+# [*db_user_manage*]
+#   Specifies if the MySQL user is to managed.
+#
+#   Defaults to `true`.
+#
+# [*db_name*]
+#   Name of the MySQL database to manage if `db_manage` is `true`.
+#
+#   Defaults to `'wordpress'`,
+#
+# [*db_user*]
+#   Name of the MySQL user to manage if `db_user_manage` is `true`.
+#
+#   Defaults to `'wordpress'`,
+#
+# [*db_password*]
+#   Secure password to set for the database users.
+#
+#   At a minimum the password is required to be at least 8 characters long,
+#   but of course longer is more secure.
+#
+# [*db_host*]
+#   Host address of the MySQL instance.
 #
 # === Authors
 #
