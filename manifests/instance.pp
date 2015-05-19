@@ -19,6 +19,8 @@
 # [*docroot*]
 #   Absolute file path to the sites document root.
 #
+#   Defaults to `'/var/www/${domain}'`.
+#
 # [*wp_version*]
 #
 # === Authors
@@ -32,7 +34,7 @@ define maw::instance (
   $ssl_cert_content = undef,
   $ssl_key          = undef,
   $ssl_key_content  = undef,
-  $docroot          = '/var/www/wordpress',
+  $docroot          = undef,
   $wp_version       = 'latest',
   $db_manage        = true,
   $db_user_manage   = true,
@@ -42,9 +44,14 @@ define maw::instance (
   $db_host          = 'localhost',
 ) {
   validate_string($domain, $db_name, $db_user, $db_host)
-  validate_absolute_path($docroot)
   validate_re($db_password, ['', '^.{8,}$'])
   validate_re($wp_version, ['latest', '\d+\.\d+(\.\d+)?'])
+
+  $_docroot = $docroot ? {
+    undef   => "/var/www/${domain}",
+    default => $docroot,
+  }
+  validate_absolute_path($_docroot)
 
   # Ensure that MySQL and Apache are setup.
   ensure_resource('class', ['mysql::server', 'apache'])
@@ -87,7 +94,7 @@ define maw::instance (
   }
 
   apache::vhost { $domain:
-    docroot  => $docroot,
+    docroot  => $_docroot,
     ssl      => $ssl,
     ssl_cert => $ssl_cert,
     ssl_key  => $ssl_key,
@@ -100,10 +107,10 @@ define maw::instance (
 
   ensure_packages(['wget', 'tar'])
 
-  exec { "Download and untar WordPress v${wp_version} for ${domain}":
-    command => "wget -O - ${wp_URL} | tar zxC ${docroot} --strip-components=1",
-    creates => "${docroot}/index.php",
-    cwd     => $docroot,
+  exec { "Download and untar WordPress ${wp_version} for ${domain}":
+    command => "wget -O - ${wp_URL} | tar zxC ${_docroot} --strip-components=1",
+    creates => "${_docroot}/index.php",
+    cwd     => $_docroot,
     path    => '/bin',
     require => [
       Apache::Vhost[$domain],
@@ -113,17 +120,17 @@ define maw::instance (
   }
 
   # Ensure a directory for the Apache user to upload content correctly exists.
-  file { "${docroot}/wp-content/uploads":
+  file { "${_docroot}/wp-content/uploads":
     ensure  => directory,
     owner   => 'apache',
     group   => 'apache',
     mode    => '0750',
-    require => Exec['Download and untar WordPress'],
+    require => Exec["Download and untar WordPress ${wp_version} for ${domain}"],
   }
 
-  file { "${docroot}/wp-config.php":
+  file { "${_docroot}/wp-config.php":
     ensure  => file,
     content => template("${module_name}/wp-config.php.erb"),
-    require => Exec['Download and untar WordPress'],
+    require => Exec["Download and untar WordPress ${wp_version} for ${domain}"],
   }
 }
