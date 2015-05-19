@@ -34,6 +34,8 @@ define maw::instance (
   $ssl_key_content  = undef,
   $docroot          = '/var/www/wordpress',
   $wp_version       = 'latest',
+  $db_manage        = true,
+  $db_user_manage   = true,
   $db_name          = 'wordpress',
   $db_user          = 'wordpress',
   $db_password      = undef,
@@ -47,30 +49,40 @@ define maw::instance (
   # Ensure that MySQL and Apache are setup.
   ensure_resource('class', ['mysql::server', 'apache'])
 
-  mysql_database { "${db_host}/${db_name}":
-    name    => $db_name,
+  if $db_manage {
+    mysql_database { "${db_host}/${db_name}":
+      name => $db_name,
+    }
   }
 
-  mysql_user { "${db_user}@${db_host}":
-    password_hash => mysql_password($db_password),
-  }
+  if $db_user_manage {
+    mysql_user { "${db_user}@${db_host}":
+      password_hash => mysql_password($db_password),
+    }
 
-  mysql_grant { "${db_user}@${db_host}/${db_name}.*":
-    table    => "${db_name}.*",
-    user       => "${db_user}@${db_host}",
-    privileges => ['ALL'],
+    mysql_grant { "${db_user}@${db_host}/${db_name}.*":
+      table      => "${db_name}.*",
+      user       => "${db_user}@${db_host}",
+      privileges => ['ALL'],
+    }
   }
 
   # Ensure the SSL cert and key are correct and present.
   if $ssl {
     File { ensure => file }
 
-    if $ssl_cert {
-      ensure_resource('file', $ssl_cert, {'content' => $ssl_cert_content})
+    if ($ssl_cert and $ssl_cert_content) {
+      file { $ssl_cert:
+        ensure  => file,
+        content => $ssl_cert_content
+      }
     }
 
     if $ssl_key {
-      ensure_resource('file', $ssl_key, {'content' => $ssl_key_content})
+      file { $ssl_key:
+        ensure  => file,
+        content => $ssl_key_content
+      }
     }
   }
 
@@ -86,9 +98,9 @@ define maw::instance (
     default  => "http://wordpress.org/wordpress-${wp_version}.tar.gz",
   }
 
-  ensure_package(['wget', 'tar'])
+  ensure_packages(['wget', 'tar'])
 
-  exec { 'Download and untar WordPress':
+  exec { "Download and untar WordPress v${wp_version} for ${domain}":
     command => "wget -O - ${wp_URL} | tar zxC ${docroot} --strip-components=1",
     creates => "${docroot}/index.php",
     cwd     => $docroot,
@@ -100,7 +112,7 @@ define maw::instance (
     ],
   }
 
-  # Ensure a directory to upload content correctly exists.
+  # Ensure a directory for the Apache user to upload content correctly exists.
   file { "${docroot}/wp-content/uploads":
     ensure  => directory,
     owner   => 'apache',
@@ -109,7 +121,7 @@ define maw::instance (
     require => Exec['Download and untar WordPress'],
   }
 
-  file { "${domain}/wp-config.php":
+  file { "${docroot}/wp-config.php":
     ensure  => file,
     content => template("${module_name}/wp-config.php.erb"),
     require => Exec['Download and untar WordPress'],
