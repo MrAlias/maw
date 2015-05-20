@@ -12,7 +12,8 @@
     {"name":"puppetlabs/concat","version_requirement":">= 1.2.2 < 2.0.0"},
     {"name":"puppetlabs/mysql","version_requirement":">= 3.3.0 < 4.0.0"},
     {"name":"puppetlabs/apache","version_requirement":">= 1.4.1 < 2.0.0"},
-    {"name":"puppetlabs/firewall","version_requirement":">= 1.5.0 < 2.0.0"}
+    {"name":"puppetlabs/firewall","version_requirement":">= 1.4.1 < 2.0.0"},
+    {"name":"ripienaar/module_data","version_requirement":">= 0.0.3 < 1.0.0"}
   ]
 }
 
