@@ -75,6 +75,13 @@
 # [*db_host*]
 #   Host address of the MySQL instance.
 #
+# [*manage_firewall*]
+#   Specify if a firewall rule should be created using the puppetlabs-firewall
+#   module resource `firewall`, to allow incomming traffic to the WordPress
+#   site.
+#
+#   Defaults to true.
+#
 # === Authors
 #
 # Tyler Yahn <codingalias@gmail.com>
@@ -94,9 +101,11 @@ define maw::instance (
   $db_user          = 'wordpress',
   $db_password      = undef,
   $db_host          = 'localhost',
+  $manage_firewall  = true,
 ) {
   validate_string($domain, $db_name, $db_user, $db_host)
-  validate_bool($ssl, $db_manage, $db_user_manage)
+  validate_array($required_pkgs)
+  validate_bool($ssl, $db_manage, $db_user_manage, $manage_firewall)
   validate_re($db_password, ['', '^.{8,}$'])
   validate_re($wp_version, ['latest', '\d+\.\d+(\.\d+)?'])
 
@@ -129,6 +138,8 @@ define maw::instance (
 
   # Ensure the SSL cert and key are correct and present.
   if $ssl {
+    $port = 443
+
     File { ensure => file }
 
     if ($ssl_cert and $ssl_cert_content) {
@@ -144,13 +155,27 @@ define maw::instance (
         content => $ssl_key_content
       }
     }
+  } else {
+    $port = 80
   }
 
   apache::vhost { $domain:
-    docroot  => $_docroot,
-    ssl      => $ssl,
-    ssl_cert => $ssl_cert,
-    ssl_key  => $ssl_key,
+    docroot    => $_docroot,
+    port       => $port,
+    ssl        => $ssl,
+    ssl_cert   => $ssl_cert,
+    ssl_key    => $ssl_key,
+  }
+
+  if $manage_firewall {
+    $_fw = {
+      chain  => 'INPUT',
+      port   => $port,
+      state  => 'NEW',
+      proto  => 'tcp',
+      action => 'accept',
+    }
+    ensure_resource('firewall', "300 Accept NEW TCP packets on ${port}", $_fw)
   }
 
   $wp_URL = $wp_version ? {

@@ -9,8 +9,10 @@
   "issues_url": "https://github.com/MrAlias/maw/issues",
   "dependencies": [
     {"name":"puppetlabs/stdlib","version_requirement":">= 4.5.1 < 5.0.0"},
+    {"name":"puppetlabs/concat","version_requirement":">= 1.2.2 < 2.0.0"},
     {"name":"puppetlabs/mysql","version_requirement":">= 3.3.0 < 4.0.0"},
-    {"name":"puppetlabs/apache","version_requirement":">= 1.4.1 < 2.0.0"}
+    {"name":"puppetlabs/apache","version_requirement":">= 1.4.1 < 2.0.0"},
+    {"name":"puppetlabs/firewall","version_requirement":">= 1.5.0 < 2.0.0"}
   ]
 }
 
