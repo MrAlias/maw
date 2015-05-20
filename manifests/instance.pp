@@ -77,10 +77,16 @@
 #
 # [*manage_firewall*]
 #   Specify if a firewall rule should be created using the puppetlabs-firewall
-#   module resource `firewall`, to allow incomming traffic to the WordPress
+#   module resource `firewall`, to allow incoming traffic to the WordPress
 #   site.
 #
 #   Defaults to true.
+#
+# [*required_pkgs*]
+#   Array of required packages for instance.
+#
+#   Defaults to the OS specific php-gd package.  Any passed value should
+#   likely include php-gd as well.
 #
 # === Authors
 #
@@ -102,6 +108,7 @@ define maw::instance (
   $db_password      = undef,
   $db_host          = 'localhost',
   $manage_firewall  = true,
+  $required_pkgs    = hiera("${module_name}::instance::required_pkgs", undef),
 ) {
   validate_string($domain, $db_name, $db_user, $db_host)
   validate_array($required_pkgs)
@@ -114,6 +121,8 @@ define maw::instance (
     default => $docroot,
   }
   validate_absolute_path($_docroot)
+
+  ensure_packages($required_pkgs)
 
   # Ensure that MySQL and Apache are setup.
   ensure_resource('class', ['mysql::server', 'apache'])
