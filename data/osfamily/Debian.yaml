@@ -1,3 +1,4 @@
 ---
 maw::instance::required_pkgs:
   - 'php5-gd'
+  - 'php5-mysql'
