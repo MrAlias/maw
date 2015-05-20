@@ -129,12 +129,14 @@ define maw::instance (
 
   if $db_manage {
     mysql_database { "${db_host}/${db_name}":
-      name => $db_name,
+      ensure => present,
+      name   => $db_name,
     }
   }
 
   if $db_user_manage {
     mysql_user { "${db_user}@${db_host}":
+      ensure        => present,
       password_hash => mysql_password($db_password),
     }
 
