@@ -151,7 +151,7 @@ This resource creates a MySQL-Apache-WordPress instance.
 ##### `maw::instance::manage_firewall`
   Specify if a firewall rule should be created using the puppetlabs-firewall module resource `firewall`, to allow incoming traffic to the WordPress site.
 
-  Defaults to true.
+  Defaults to `true`.
 
 ##### `required_pkgs`
 
