@@ -27,7 +27,7 @@ This module combines the database management of the puppetlabs-mysql module, the
 ### What maw affects
 
 * MySQL databases and settings.
-* Apache Vhosts and settings.
+* Apache vhosts and settings.
 
 ### Beginning with maw
 
@@ -68,7 +68,85 @@ Hash of all the `maw::instances` to create.
 
 #### maw::instance
 
-This resource defines a MySQL-Apache-WordPress instillation.
+This resource creates a MySQL-Apache-WordPress instance.
+
+##### `maw::instance::domain`
+
+  The domain name the site will have.
+
+  Defaults to the **namevar**.
+
+##### `maw::instance::ssl`
+
+  Specifies if the Apache vhost should use SSL.
+
+  Defaults to `false`.
+
+##### `maw::instance::ssl_cert`
+
+  The absolute file path of SSL certificate to use if `ssl` is true.
+
+##### `maw::instance::ssl_cert_content`
+
+  If specified, this defines the contents of the SSL certificate.
+
+##### `maw::instance::ssl_key`
+
+  The absolute file path of SSL key to use if `ssl` is true.
+
+##### `maw::instance::ssl_key_content`
+
+  If specified, this defines the contents of the SSL key.
+
+##### `maw::instance::docroot`
+
+  Absolute file path to the sites document root.
+
+  Defaults to `'/var/www/${domain}'`.
+
+##### `maw::instance::wp_version`
+
+  Version of WordPress to install at the `docroot`.
+
+  Valid values are the semantic version of WordPress or `'latest'` to install
+  the latest version released.
+
+  Defaults to `'latest'`.
+
+##### `maw::instance::db_manage`
+
+  Specifies if the MySQL database is to managed.
+
+  Defaults to `true`.
+
+##### `maw::instance::db_user_manage`
+
+  Specifies if the MySQL user is to managed.
+
+  Defaults to `true`.
+
+##### `maw::instance::db_name`
+
+  Name of the MySQL database to manage if `db_manage` is `true`.
+
+  Defaults to `'wordpress'`,
+
+##### `maw::instance::db_user`
+
+  Name of the MySQL user to manage if `db_user_manage` is `true`.
+
+  Defaults to `'wordpress'`,
+
+##### `maw::instance::db_password`
+
+  Secure password to set for the database users.
+
+  At a minimum the password is required to be at least 8 characters long,
+  but of course longer is more secure.
+
+##### `maw::instance::db_host`
+
+  Host address of the MySQL instance.
 
 
 ## Limitations
