@@ -215,9 +215,46 @@ define maw::instance (
     require => Exec["Download and untar WordPress ${wp_version} for ${domain}"],
   }
 
-  file { "${_docroot}/wp-config.php":
-    ensure  => file,
-    content => template("${module_name}/wp-config.php.erb"),
+  concat { "${_docroot}/wp-config.php":
+    order   => 'numeric',
     require => Exec["Download and untar WordPress ${wp_version} for ${domain}"],
+  }
+
+  concat::fragment { "${_docroot}/wp-config.php header":
+    content => template("${module_name}/wp-config.php_header.erb"),
+    order   => '01',
+    target  => "${_docroot}/wp-config.php",
+  }
+
+  concat::fragment { "${_docroot}/wp-config.php MySQL":
+    content => template("${module_name}/wp-config.php_db.erb"),
+    order   => '02',
+    target  => "${_docroot}/wp-config.php",
+  }
+
+  concat::fragment { "${_docroot}/wp-config.php table prefix":
+    content => template("${module_name}/wp-config.php_table_prefix.erb"),
+    order   => '03',
+    target  => "${_docroot}/wp-config.php",
+  }
+
+  $secret_key_file_path = "/etc/puppet/keys/${domain}.keys"
+  file { "Secret keys for ${domain}":
+    path    => $secret_key_file_path,
+    ensure  => file,
+    replace => false,
+    content => template("${module_name}/wp-config.php_secret_keys.erb"),
+    require => Exec["Download and untar WordPress ${wp_version} for ${domain}"],
+  }->
+  concat::fragment { "${_docroot}/wp-config.php secret keys":
+    source => $secret_key_file_path,
+    order  => '04',
+    target => "${_docroot}/wp-config.php",
+  }
+
+  concat::fragment { "${_docroot}/wp-config.php footer":
+    content => template("${module_name}/wp-config.php_footer.erb"),
+    order   => '05',
+    target  => "${_docroot}/wp-config.php",
   }
 }
