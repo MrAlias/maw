@@ -171,11 +171,11 @@ define maw::instance (
   }
 
   apache::vhost { $domain:
-    docroot    => $_docroot,
-    port       => $port,
-    ssl        => $ssl,
-    ssl_cert   => $ssl_cert,
-    ssl_key    => $ssl_key,
+    docroot  => $_docroot,
+    port     => $port,
+    ssl      => $ssl,
+    ssl_cert => $ssl_cert,
+    ssl_key  => $ssl_key,
   }
 
   if $manage_firewall {
@@ -246,8 +246,8 @@ define maw::instance (
   ensure_resource('file', $secret_key_paths, {'ensure' => 'directory'})
 
   file { "Secret keys for ${domain}":
-    path    => $secret_key_file_path,
     ensure  => file,
+    path    => $secret_key_file_path,
     replace => false,
     content => template("${module_name}/wp-config.php_secret_keys.erb"),
     require => [
