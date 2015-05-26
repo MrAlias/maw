@@ -240,13 +240,20 @@ define maw::instance (
     target  => "${_docroot}/wp-config.php",
   }
 
+  $secret_key_paths = ['/etc', '/etc/puppet', '/etc/puppet/keys/']
   $secret_key_file_path = "/etc/puppet/keys/${domain}.keys"
+
+  ensure_resource('file', $secret_key_paths, {'ensure' => 'directory'})
+
   file { "Secret keys for ${domain}":
     path    => $secret_key_file_path,
     ensure  => file,
     replace => false,
     content => template("${module_name}/wp-config.php_secret_keys.erb"),
-    require => Exec["Download and untar WordPress ${wp_version} for ${domain}"],
+    require => [
+      Exec["Download and untar WordPress ${wp_version} for ${domain}"],
+      File['/etc/puppet/keys/'],
+    ],
   }->
   concat::fragment { "${_docroot}/wp-config.php secret keys":
     source => $secret_key_file_path,
