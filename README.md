@@ -161,8 +161,6 @@ This resource creates a MySQL-Apache-WordPress instance.
 
 ## Limitations
 
-**THIS MODULE IS A WORK IN PROGRESS AND CURRENTLY INCOMPLETE**
-
 This module has only been tested on CentOS 7.  There are plans to support both Debian and RedHat systems.
 
 ## Development
