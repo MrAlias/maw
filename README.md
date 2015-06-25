@@ -113,6 +113,18 @@ This resource creates a MySQL-Apache-WordPress instance.
 
   Defaults to `'latest'`.
 
+##### `maw::instance::wp_debug`
+
+  Specifies if WordPress should be in debug mode.
+
+  Defaults to `false`.
+
+##### `maw::instance::wp_memory_limit`
+
+  Specifies the WordPress memory limit.
+
+  If nothing is specified it is set by WordPress.
+
 ##### `maw::instance::db_manage`
 
   Specifies if the MySQL database is to managed.

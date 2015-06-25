@@ -7,6 +7,8 @@ maw::instance { 'www.test.site.com':
   ssl_key_content  => 'test key content',
   docroot          => '/var/www/test_wordpress',
   wp_version       => '4.2',
+  wp_debug         => true,
+  wp_memory_limit  => '1G',
   db_name          => 'mydomain',
   db_user          => 'me',
   db_password      => 'TestingPassword',

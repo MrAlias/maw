@@ -46,6 +46,16 @@
 #
 #   Defaults to `'latest'`.
 #
+# [*wp_debug*]
+#   Specifies if WordPress should be in debug mode.
+#
+#   Defaults to `false`.
+#
+# [*wp_memory_limit*]
+#   Specifies the WordPress memory limit.
+#
+#   If nothing is specified it is set by WordPress.
+#
 # [*db_manage*]
 #   Specifies if the MySQL database is to managed.
 #
@@ -101,6 +111,8 @@ define maw::instance (
   $ssl_key_content  = undef,
   $docroot          = undef,
   $wp_version       = 'latest',
+  $wp_debug         = false,
+  $wp_memory_limit  = undef,
   $db_manage        = true,
   $db_user_manage   = true,
   $db_name          = 'wordpress',
@@ -110,9 +122,8 @@ define maw::instance (
   $manage_firewall  = true,
   $required_pkgs    = hiera("${module_name}::instance::required_pkgs", undef),
 ) {
-  validate_string($domain, $db_name, $db_user, $db_host)
-  validate_array($required_pkgs)
-  validate_bool($ssl, $db_manage, $db_user_manage, $manage_firewall)
+  validate_string($domain, $db_name, $db_user, $db_host, $wp_memory_limit)
+  validate_bool($ssl, $db_manage, $db_user_manage, $manage_firewall, $wp_debug)
   validate_re($db_password, ['', '^.{8,}$'])
   validate_re($wp_version, ['latest', '\d+\.\d+(\.\d+)?'])
 
@@ -122,7 +133,9 @@ define maw::instance (
   }
   validate_absolute_path($_docroot)
 
-  ensure_packages($required_pkgs)
+  if $required_pkgs {
+    ensure_packages($required_pkgs)
+  }
 
   # Ensure that MySQL and Apache are setup.
   ensure_resource('class', ['mysql::server', 'apache'])

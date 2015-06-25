@@ -5,8 +5,12 @@
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
  */
-define('WP_DEBUG', false);
+define('WP_DEBUG', <%= @wp_debug %>);
 
+<% if @wp_memory_limit -%>
+define('WP_MEMORY_LIMIT', '<%= @wp_memory_limit %>');
+
+<% end -%>
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
