@@ -189,6 +189,7 @@ define maw::instance (
     ssl      => $ssl,
     ssl_cert => $ssl_cert,
     ssl_key  => $ssl_key,
+    override => 'FileInfo',
   }
 
   if $manage_firewall {
