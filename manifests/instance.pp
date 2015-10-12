@@ -16,6 +16,11 @@
 #
 #   Defaults to the **namevar**.
 #
+# [*serveraliases*]
+#   Aliases for the instance's website.
+#
+#   Defaults to `[]`.
+#
 # [*ssl*]
 #   Specifies if the Apache Vhost should use SSL.
 #
@@ -104,6 +109,7 @@
 #
 define maw::instance (
   $domain           = $name,
+  $serveraliases    = [],
   $ssl              = false,
   $ssl_cert         = undef,
   $ssl_cert_content = undef,
@@ -126,6 +132,7 @@ define maw::instance (
   validate_bool($ssl, $db_manage, $db_user_manage, $manage_firewall, $wp_debug)
   validate_re($db_password, ['', '^.{8,}$'])
   validate_re($wp_version, ['latest', '\d+\.\d+(\.\d+)?'])
+  validate_array($serveraliases)
 
   $_docroot = $docroot ? {
     undef   => "/var/www/${domain}",
@@ -184,12 +191,13 @@ define maw::instance (
   }
 
   apache::vhost { $domain:
-    docroot  => $_docroot,
-    port     => $port,
-    ssl      => $ssl,
-    ssl_cert => $ssl_cert,
-    ssl_key  => $ssl_key,
-    override => 'FileInfo',
+    docroot       => $_docroot,
+    serveraliases => $serveraliases,
+    port          => $port,
+    ssl           => $ssl,
+    ssl_cert      => $ssl_cert,
+    ssl_key       => $ssl_key,
+    override      => 'FileInfo',
   }
 
   if $manage_firewall {

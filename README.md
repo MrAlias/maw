@@ -76,6 +76,12 @@ This resource creates a MySQL-Apache-WordPress instance.
 
   Defaults to the **namevar**.
 
+##### `maw::instance::serveraliases`
+
+  Aliases for the instance's website.
+
+  Defaults to `[]`.
+
 ##### `maw::instance::ssl`
 
   Specifies if the Apache vhost should use SSL.
